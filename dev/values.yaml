@@ -87,6 +87,28 @@ redmine:
       storageClass: longhorn
   service:
     type: NodePort
+  persistence:
+    size: 1Gi
+  mariadb:
+    global:
+      persistence:
+        storageClass: longhorn
+    primary:
+      persistence:
+        size: 1Gi
+    secondary:
+      persistence:
+        size: 1Gi
+  postgresql:
+    global:
+      persistence:
+        storageClass: longhorn
+    primary:
+      persistence:
+        size: 1Gi
+    secondary:
+      persistence:
+        size: 1Gi
 
 kube-prometheus-stack:
   grafana:
@@ -107,11 +129,5 @@ kube-prometheus-stack:
          accessModes: ["ReadWriteOnce"]
          resources:
            requests:
-             storage: 5Gi
+             storage: 1Gi
     #    selector: {}
-
-
-longhorn:
-  ui:
-    type: NodePort
-    nodePort: 3001

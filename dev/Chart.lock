@@ -5,8 +5,5 @@ dependencies:
 - name: kube-prometheus-stack
   repository: https://prometheus-community.github.io/helm-charts
   version: 41.7.4
-- name: longhorn
-  repository: https://charts.longhorn.io
-  version: 1.4.0
-digest: sha256:10c3542fe35ee35a513a67dd0deec4eb5fbbb6a87722d0f6f8e5eb9ca0db0a2d
-generated: "2023-01-15T16:30:05.98196978-03:00"
+digest: sha256:162c129d1fcaf31a94357ed96156df9ceeb8d0fd866dd9ed5d363cabf9892931
+generated: "2023-01-15T16:44:58.648037756-03:00"

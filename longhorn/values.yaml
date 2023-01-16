@@ -1,0 +1,9 @@
+longhorn:
+  ui:
+    type: NodePort
+  manager:
+    type: NodePort
+  persistence:
+    defaultClassReplicaCount: 2
+  defaultSettings:
+    storageMinimalAvailablePercentage: 10

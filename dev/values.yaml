@@ -82,6 +82,7 @@ tolerations: []
 affinity: {}
 
 redmine:
+  enabled: true
   global:
     persistence:
       storageClass: longhorn
@@ -111,6 +112,7 @@ redmine:
         size: 1Gi
 
 kube-prometheus-stack:
+  enabled: true
   grafana:
     sidecar:
       dashboards:

@@ -81,8 +81,12 @@ tolerations: []
 
 affinity: {}
 
+# https://github.com/bitnami/charts/tree/main/bitnami/redmine
 redmine:
   enabled: true
+  redmineUsername: admin
+  redminePassword: admin
+  databaseType: postgresql
   global:
     persistence:
       storageClass: longhorn
@@ -91,19 +95,29 @@ redmine:
   persistence:
     size: 1Gi
   mariadb:
-    global:
-      persistence:
-        storageClass: longhorn
-    primary:
-      persistence:
-        size: 1Gi
-    secondary:
-      persistence:
-        size: 1Gi
+    enabled: false
+    # architecture: replication
+    # global:
+    #   persistence:
+    #     storageClass: longhorn
+    # primary:
+    #   persistence:
+    #     size: 1Gi
+    # secondary:
+    #   persistence:
+    #     size: 1Gi
+  # https://github.com/bitnami/charts/tree/main/bitnami/postgresql
   postgresql:
+    # architecture: replication
+    architecture: standalone
     global:
       persistence:
         storageClass: longhorn
+      postgresql:
+        auth:
+          password: admin
+          postgresPassword: admin
+
     primary:
       persistence:
         size: 1Gi

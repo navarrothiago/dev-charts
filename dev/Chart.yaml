@@ -34,4 +34,3 @@ dependencies:
   repository: "https://prometheus-community.github.io/helm-charts"
   namespace: prometheus
   condition: kube-prometheus-stack.enabled
-

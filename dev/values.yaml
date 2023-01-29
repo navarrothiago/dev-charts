@@ -96,20 +96,11 @@ redmine:
     size: 1Gi
   mariadb:
     enabled: false
-    # architecture: replication
-    # global:
-    #   persistence:
-    #     storageClass: longhorn
-    # primary:
-    #   persistence:
-    #     size: 1Gi
-    # secondary:
-    #   persistence:
-    #     size: 1Gi
-  # https://github.com/bitnami/charts/tree/main/bitnami/postgresql
   postgresql:
     # architecture: replication
     architecture: standalone
+    volumePermissions:
+      enabled: true
     global:
       persistence:
         storageClass: longhorn
@@ -121,6 +112,8 @@ redmine:
     primary:
       persistence:
         size: 1Gi
+      nodeSelector:
+        kubernetes.io/hostname: controller-0
     secondary:
       persistence:
         size: 1Gi

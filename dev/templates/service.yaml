@@ -1,0 +1,16 @@
+# make sure the dashboard is enabled. Access via http://<node_port>:30500/dashboard/
+# DONT FORGET TO PUT SLASH AT THE END OF THE URL.
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: traefik-dashboard
+spec:
+  selector:
+    app.kubernetes.io/name: traefik
+  ports:
+  - name: http
+    port: 80
+    targetPort: 9000
+    nodePort: 30500
+  type: NodePort

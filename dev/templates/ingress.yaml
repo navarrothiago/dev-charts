@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-traefik
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+  # TODO: setup local DNS configuration or DNS server and change the line below.
+  - host: redmine.localhost
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: dev-redmine
+            port:
+              name: http
+

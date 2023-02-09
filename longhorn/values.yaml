@@ -1,9 +1,11 @@
-# https://github.com/longhorn/charts/blob/master/charts/longhorn/values.yaml
 longhorn:
-  ui:
-    type: NodePort
-  manager:
-    type: NodePort
+  image:
+    pullPolicy: Always
+  service:
+    ui:
+      type: NodePort
+    manager:
+      type: NodePort
   persistence:
     defaultClassReplicaCount: 2
   defaultSettings:

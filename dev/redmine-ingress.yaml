@@ -1,0 +1,32 @@
+##
+## NOT RECOMMENDED FOR PRODUCTION USE - THIS IS FOR TESTING ONLY
+##
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: traefik
+  name: dev-redmine
+  namespace: default
+spec:
+  rules:
+  - host: argus.dti.ctex.eb.mil.br
+    http:
+      paths:
+      - backend:
+          service:
+            name: dev-redmine
+            port:
+              name: http
+        path: /
+        pathType: Prefix
+  - host: argus.dti.ctex.eb.mil.br
+    http:
+      paths:
+      - backend:
+          service:
+            name: dev-redmine
+            port:
+              name: http
+        path: /
+        pathType: Prefix

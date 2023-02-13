@@ -11,3 +11,4 @@ longhornio/longhorn-ui:v1.4.0
 docker.io/bitnami/bitnami-shell:11-debian-11-r62
 docker.io/bitnami/postgresql:15.1.0-debian-11-r12
 docker.io/bitnami/redmine:5.0.4-debian-11-r9
+nextcloud:25.0.3-apache

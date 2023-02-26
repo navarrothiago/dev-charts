@@ -13,6 +13,7 @@ redmine:
   redmineUsername: admin
   redminePassword: admin
   databaseType: postgresql
+  smtpProtocol: tls
   global:
     persistence:
       storageClass: longhorn
@@ -20,6 +21,14 @@ redmine:
 #    pullPolicy: Always
   service:
     type: ClusterIP
+  ## @param extraEnvVars Array with extra environment variables to add to the Redmine container
+  ##
+  ## Not recommended to set SMTP_OPENSSL_VERIFY_MODE=none for production use
+  ## because it exposes the client to potential security risks such as
+  ## Man-in-the-Middle (MitM) attacks.
+  extraEnvVars:
+    - name: SMTP_OPENSSL_VERIFY_MODE
+      value: "none"
   ingress:
     ## @param ingress.enabled Enable ingress record generation for Redmine
     ##

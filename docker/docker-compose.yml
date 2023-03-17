@@ -1,0 +1,207 @@
+version: "3.6"
+
+services:
+  nginx:
+    image: nginx:1.22.1
+    container_name: nginx
+    hostname: nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - type: bind
+        source: "/home/ctex/docker/srv/nginx/nginx.conf"
+        target: "/etc/nginx/nginx.conf"
+      - type: bind
+        source: "/home/ctex/docker/srv/ssl/3cta.eb.mil.br.crt"
+        target: "/etc/nginx/ssl/3cta.eb.mil.br.crt"
+        read_only: true
+      - type: bind
+        source: "/home/ctex/docker/srv/ssl/3cta.eb.mil.br.key"
+        target: "/etc/nginx/ssl/3cta.eb.mil.br.key"
+        read_only: true
+    networks:
+      - net
+    depends_on:
+      - gitlab
+      - redmine
+
+  gitlab:
+    image: gitlab/gitlab-ce:15.9.3-ce.0
+    hostname: gitlab
+    container_name: gitlab
+    restart: always
+    ports:
+      - "2200:22/tcp"
+      - "5050:5050/tcp"
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url  "https://gitlab.3cta.eb.mil.br"
+        registry_external_url 'https://gitlab.3cta.eb.mil.br:5050'
+        letsencrypt['enable'] = false
+        gitlab_rails['gitlab_shell_ssh_port'] = 2200
+        gitlab_rails['smtp_enable'] = true
+        gitlab_rails['smtp_port'] = ${SYSADMIN_EMAILPORT}
+        gitlab_rails['smtp_user_name'] = "${SYSADMIN_EMAIL}"
+        gitlab_rails['smtp_password'] = "${SYSADMIN_EMAILPASSWORD}"
+        gitlab_rails['smtp_domain'] = "${DOMAIN}"
+        gitlab_rails['smtp_authentication'] = "login"
+        gitlab_rails['smtp_enable_starttls_auto'] = true
+        gitlab_rails['smtp_openssl_verify_mode'] = 'none'
+        gitlab_rails['gitlab_email_from'] = "${SYSADMIN_EMAIL}"
+        gitlab_rails['gitlab_email_display_name'] = "GitLab RDS"
+        gitlab_rails['smtp_address'] = "10.13.148.1"
+    volumes:
+      - type: bind
+        source: "/home/ctex/docker/srv/gitlab/config"
+        target: "/etc/gitlab"
+
+      - type: bind
+        source: "/home/ctex/docker/srv/gitlab/logs"
+        target: "/var/log/gitlab"
+
+      - type: bind
+        source: "/home/ctex/docker/srv/gitlab/data"
+        target: "/var/opt/gitlab"
+
+      - type: bind
+        source: "/home/ctex/docker/srv/ssl/3cta.eb.mil.br.crt"
+        target: "/etc/gitlab/ssl/gitlab.3cta.eb.mil.br.crt"
+        read_only: true
+
+      - type: bind
+        source: "/home/ctex/docker/srv/ssl/3cta.eb.mil.br.key"
+        target: "/etc/gitlab/ssl/gitlab.3cta.eb.mil.br.key"
+        read_only: true
+
+      - type: bind
+        source: "/home/ctex/docker/srv/ssl/3cta.eb.mil.br.crt"
+        target: "/etc/gitlab/ssl/registry.3cta.eb.mil.br.crt"
+        read_only: true
+
+      - type: bind
+        source: "/home/ctex/docker/srv/ssl/3cta.eb.mil.br.key"
+        target: "/etc/gitlab/ssl/registry.3cta.eb.mil.br.key"
+        read_only: true
+
+      - type: bind
+        source: "/home/ctex/backup/diario/RDS/repositorios/git"
+        target: "/backup/git"
+
+    networks:
+      - net
+
+  redmine:
+    image: redmine:4.2
+    container_name: redmine
+    hostname: redmine
+    restart: always
+
+    volumes:
+      - type: bind
+        source: "/etc/localtime"
+        target: "/etc/localtime"
+        read_only: true
+
+      - type: bind
+        source: "/home/ctex/backup/diario/RDS/docker/repoenv/servicos/redmine/config/configuration.yml"
+        target: "/usr/src/redmine/config/configuration.yml"
+
+        # Adiciona a linha 'config.force_ssl=true'
+      # - type: bind
+      #   source: "/home/ctex/backup/diario/RDS/docker/repoenv/servicos/redmine/config/application.rb"
+      #   target: "/usr/src/redmine/config/application.rb"
+
+      - type: bind
+        source: "/home/ctex/backup/diario/RDS/docker/repoenv/servicos/redmine/config/gitupdate.sh"
+        target: "/usr/src/redmine/config/gitupdate.sh"
+
+      - type: bind
+        source: "/home/ctex/backup/diario/RDS/docker/repoenv/servicos/redmine/config/gitupdate_daemon.sh"
+        target: "/usr/src/redmine/config/gitupdate_daemon.sh"
+
+      - type: bind
+        source: "/home/ctex/docker/srv/ssl/"
+        target: "/usr/src/redmine/config/ssl/"
+
+      - type: bind
+        source: "/home/ctex/backup/diario/RDS/repositorios/arquivos/redmine"
+        target: "/usr/src/redmine/files"
+
+      - type: bind
+        source: "/home/ctex/backup/diario/RDS/repositorios/git/repositories"
+        target: "/usr/src/redmine/git/repos"
+        read_only: true
+
+      - type: bind
+        source: "/home/ctex/backup/diario/RDS/docker/repoenv/servicos/redmine/gitmirrors"
+        target: "/usr/src/redmine/git/mirrors"
+
+      # - type: bind
+      #   source: "/home/ctex/backup/diario/RDS/docker/repoenv/servicos/redmine/plugins"
+      #   target: "/usr/src/redmine/plugins"
+
+      - type: bind
+        source: "/home/ctex/backup/diario/RDS/docker/repoenv/servicos/redmine/themes"
+        target: "/usr/src/redmine/public/themes"
+
+      # - type: bind
+      #   source: "/home/ctex/docker/docker-entrypoint.sh"
+      #   target: "/docker-entrypoint.sh"
+
+    environment:
+      REDMINE_DB_POSTGRES: "${REDMINE_DB_POSTGRES}"
+      REDMINE_DB_USERNAME: "${REDMINE_DB_USERNAME}"
+      REDMINE_DB_PASSWORD: "${REDMINE_DB_PASSWORD}"
+      REDMINE_DB_DATABASE: "${REMINE_DB_DATABASE}"
+
+      # possibilita a inicializacao sem internet
+      REDMINE_PLUGINS_MIGRATE: "false"
+
+      SMTP_ENABLED: 'false'
+      SMTP_METHOD: smtp
+      SMTP_DOMAIN: ${DOMAIN}
+      SMTP_HOST: 10.13.148.1
+      SMTP_USER: ${SYSADMIN_EMAIL}
+      SMTP_PASS: ${SYSADMIN_EMAILPASSWORD}
+      SMTP_PORT: ${SYSADMIN_EMAILPORT}
+      SMTP_STARTTLS: 'true'
+      SMTP_AUTHENTICATION: :login
+
+    networks:
+      - net
+
+    depends_on:
+      - postgres
+
+
+  postgres:
+    image: postgres:10.4
+    container_name: postgres
+    restart: always
+
+    ports:
+      - "5432:5432/tcp"
+
+    volumes:
+      - type: bind
+        source: "/etc/localtime"
+        target: "/etc/localtime"
+        read_only: true
+
+      - type: bind
+        source: "/home/ctex/backup/diario/RDS/repositorios/postgres/10.4"
+        target: "/var/lib/postgresql/data"
+
+    environment:
+      POSTGRES_USER: "${POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+      POSTGRES_DB: "${POSTGRES_DB}"
+
+    networks:
+      - net
+
+networks:
+  net:
+    driver: bridge

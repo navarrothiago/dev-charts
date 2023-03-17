@@ -2,5 +2,5 @@
 **kube.config*
 *.tar
 *.pem
-*.ctr
+*.crt
 *.key

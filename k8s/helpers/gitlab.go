@@ -84,6 +84,10 @@ func CreateUsers(git *gitlab.Client) {
 
 		if err != nil {
 			fmt.Println(err)
+			_, _, err := git.Users.ModifyUser(user.ID, &gitlab.ModifyUserOptions{
+				Email: &user.Email,
+			})
+
 		}
 	}
 
